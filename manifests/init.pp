@@ -11,5 +11,11 @@ import "host.pp"
 import "client.pp"
 import "plugin.pp"
 
-include assert_lsbdistcodename
+#include assert_lsbdistcodename
 
+class munin {
+  package {
+    'perl-Net-SSLeay':
+      ensure => installed;
+  }
+}

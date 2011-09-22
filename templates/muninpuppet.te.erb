@@ -1,0 +1,20 @@
+module muninpuppet 1.6;
+
+require {
+        type munin_t;
+        type puppet_var_lib_t;
+        class dir search;
+<% if operatingsystem == 'Fedora' -%>
+	class file { execute getattr open read };
+<% else -%>
+	class file { execute getattr read };
+<% end -%>
+}
+
+#============= munin_t ==============
+allow munin_t puppet_var_lib_t:dir search;
+<% if operatingsystem == 'Fedora' %>
+allow munin_t puppet_var_lib_t:file { execute getattr open read };
+<% else %>
+allow munin_t puppet_var_lib_t:file { execute getattr read };
+<% end %>

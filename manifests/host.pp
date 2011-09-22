@@ -4,38 +4,54 @@
 
 class munin::host
 {
-	include munin::client
-
-	module_dir { [ "munin/nodes" ]: }
-
-	package { [ "munin", "nmap"]: ensure => installed, }
-
-	File <<| tag == 'munin' |>>
-
-	concatenated_file { "/etc/munin/munin.conf":
-		dir => $NODESDIR,
-		header => "/etc/munin/munin.conf.header",
-	}
-
-	file {
-		"/etc/munin/munin.conf.header":
-			source => "/etc/munin/munin.conf",
-			replace => no, # only initialise
-			mode => 0644, owner => root, group => 0,
-			before => File["/etc/munin/munin.conf"];
-	}
-	
-	file { ["/var/log/munin-update.log", "/var/log/munin-limits.log", 
-	        "/var/log/munin-graph.log", "/var/log/munin-html.log"]:
-		ensure => present,
-		mode => 640, owner => munin, group => root;
+  include munin
+  include munin::client
+  
+  module_dir {
+    [ "munin/nodes" ]:
   }
-	
+  
+  package {
+    [ "munin", "nmap"]:
+      ensure => installed;
+  }
+  
+  File <<| tag == 'munin' |>>
+  
+  concatenated_file { "/etc/munin/munin.conf":
+    dir => $NODESDIR,
+    header => "/etc/munin/munin.conf.header",
+  }
+  
+  file {
+    "/etc/munin/munin.conf.header":
+      content => template('munin/munin.conf.header.erb'),
+      owner => root,
+      group => 0,
+      mode => 0644,
+      before => File["/etc/munin/munin.conf"];
+  }
+  
+  file {
+    ["/var/log/munin/munin-update.log", "/var/log/munin/munin-limits.log", 
+     "/var/log/munin/munin-graph.log", "/var/log/munin/munin-html.log"]:
+       ensure => present,
+       owner => munin,
+       group => root,
+       mode => 640;
+  }
+
+  munin::plugin {
+    munin_stats:
+      config => "  user munin\n";
+
+    munin_update:
+      config => "  user munin\n";
+  }
 }
 
 class munin::snmp_collector
 {
-
 	file { 
 		"${module_dir_path}/munin/create_snmp_links":
 			source => "puppet:///modules/munin/create_snmp_links.sh",

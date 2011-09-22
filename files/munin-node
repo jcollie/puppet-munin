@@ -51,3 +51,18 @@ user root
 
 [yum]
 user root
+
+[exim*]
+group mail
+
+[cps*]
+user root
+
+[apt]
+user root
+
+[vlan*]
+user root
+
+[postfix*]
+user root

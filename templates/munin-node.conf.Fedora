@@ -37,8 +37,9 @@ ignore_file \.pod$
 #host_name localhost.localdomain
 host_name <%= fqdn %>
 
-# A list of addresses that are allowed to connect.
 cidr_allow 127.0.0.1/32
+
+# A list of addresses that are allowed to connect.
 <%
 if ! munin_cidr_allow.is_a?(Array) then
         allows = [ munin_cidr_allow ]

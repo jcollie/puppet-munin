@@ -1,0 +1,9 @@
+#tls enabled
+#tls_verify_certificate yes
+#tls_private_key /var/lib/puppet/ssl/private_keys/<%= fqdn %>.pem
+#tls_certificate /var/lib/puppet/ssl/certs/<%= fqdn %>.pem
+#tls_ca_certificate /var/lib/puppet/ssl/certs/ca.pem
+#tls_verify_depth 5
+fork yes
+max_graph_jobs 20
+max_processes 20

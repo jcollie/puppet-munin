@@ -2,6 +2,13 @@
 ########## Managed by puppet
 ##########
 
+#tls enabled
+#tls_verify_certificate yes
+#tls_private_key /var/lib/puppet/ssl/private_keys/<%= fqdn %>.pem
+#tls_certificate /var/lib/puppet/ssl/certs/<%= fqdn %>.pem
+#tls_ca_certificate /var/lib/puppet/ssl/certs/ca.pem
+#tls_verify_depth 5
+
 log_level 4
 log_file /var/log/munin/munin-node.log
 pid_file /var/run/munin/munin-node.pid
@@ -30,9 +37,16 @@ ignore_file \.pod$
 #host_name localhost.localdomain
 host_name <%= fqdn %>
 
-# A list of addresses that are allowed to connect.  This must be a
-# regular expression, due to brain damage in Net::Server, which
-# doesn't understand CIDR-style network notation.  You may repeat
-# the allow line as many times as you'd like
-allow ^127\.0\.0\.1$
-allow <%= munin_allow %>
+# A list of addresses that are allowed to connect.
+cidr_allow 127.0.0.1/32
+<%
+if ! munin_cidr_allow.is_a?(Array) then
+        allows = [ munin_cidr_allow ]
+else
+        allows = munin_cidr_allow
+end
+
+allows.each do |cidr|
+-%>
+cidr_allow <%= cidr %>
+<% end -%>
